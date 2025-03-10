@@ -5,10 +5,7 @@ import com.example.demo.model.dto.ClienteResponseDTO;
 import com.example.demo.model.dto.ContaClienteResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,28 +16,37 @@ import java.util.stream.Collectors;
 @Builder
 @Table(name = "tb_cliente")
 @NoArgsConstructor
+//@Inheritance(strategy = InheritanceType.JOINED)
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nome;
     private Long cpf;
-    @OneToMany(mappedBy = "titular")
-    private Set<Conta> contas;
+    @OneToMany(mappedBy = "titular", cascade = CascadeType.MERGE)
+    private List<Conta> contas;
 
-    public Set<Conta> getContas() {
-        if(this.contas != null){
-            return Collections.unmodifiableSet(contas);
+    public List<Conta> getContas() {
+        if(this.contas == null){
+            return new ArrayList<>();
         }
-        return new HashSet<>();
+        return contas;
     }
 
     public void addConta(@NotNull Conta conta){
+        if(this.contas.contains(conta)){
+            throw new RuntimeException();
+        }
         this.contas.add(conta);
+        conta.setTitular(this);
     }
 
     public void removerConta(@NotNull Conta conta){
+        if(!this.contas.contains(conta)){
+            throw new RuntimeException();
+        }
         this.contas.remove(conta);
+        conta.setTitular(null);
     }
 
     public ClienteContaGetResponseDTO convertToClienteContaResponseDTO(){
@@ -50,10 +56,10 @@ public class Cliente {
     }
 
     public ClienteResponseDTO convertToClienteResponseDTO() {
-        Set<ContaClienteResponseDTO> contasDto =
-                this.contas.stream().map(
+        List<ContaClienteResponseDTO> contasDto =
+                getContas().stream().map(
                         Conta::convertToContaClienteResponseDTO).
-                        collect(Collectors.toSet());
+                        toList();
         return new ClienteResponseDTO(this.id, this.nome, this.cpf, contasDto);
     }
 

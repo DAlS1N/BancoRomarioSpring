@@ -6,6 +6,7 @@ public record ClientePostRequestDTO (String nome,
                                      Long cpf) {
 
     public Cliente convert() {
+
         return Cliente.builder().nome(this.nome).cpf(this.cpf).build();
     }
 }

@@ -9,7 +9,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public record ContaPostRequestDTO (
         @NotNull
-        Cliente titular,
+        @Positive
+        Integer idTitular,
         @Positive
         @NotNull
         Integer numero,
@@ -17,7 +18,7 @@ public record ContaPostRequestDTO (
         @NotNull
         Double limite) {
 
-    public Conta convert() {
-       return Conta.builder().titular(titular).numero(numero).limite(limite).build();
+    public Conta convert(Cliente cliente) {
+       return Conta.builder().titular(cliente).numero(numero).limite(limite).build();
     }
 }

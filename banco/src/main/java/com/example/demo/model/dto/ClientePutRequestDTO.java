@@ -8,7 +8,7 @@ import java.util.Set;
 
 public record ClientePutRequestDTO(String nome,
                                    Long cpf,
-                                   Set<Conta> contas) {
+                                   List<Conta> contas) {
     public Cliente convert() {
         return Cliente.builder().nome(nome).cpf(cpf).contas(contas).build();
     }
