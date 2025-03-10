@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @AllArgsConstructor
@@ -23,7 +22,7 @@ public class Cliente {
     private Integer id;
     private String nome;
     private Long cpf;
-    @OneToMany(mappedBy = "titular", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "titular", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conta> contas;
 
     public List<Conta> getContas() {
@@ -63,7 +62,7 @@ public class Cliente {
         return new ClienteResponseDTO(this.id, this.nome, this.cpf, contasDto);
     }
 
-    //    @ManyToMany
+//    @ManyToMany
 //    @JoinTable(
 //            name = "tb_cliente_conta",
 //            joinColumns =
