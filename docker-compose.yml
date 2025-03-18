@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: yourdatabase
+    ports:
+      - "3306:3306"
+  app:
+    image: springboot-demo
+    ports:
+      - "9091:9091"
+    depends_on:
+      - db
